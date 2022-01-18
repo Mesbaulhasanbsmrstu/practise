@@ -37,11 +37,11 @@ namespace practise.Controllers
             {
                 return BadRequest("Page number must be greater than 0");
             }
-            //PaginationDTO pagination=new PaginationDTO(page,limit);
+            PaginationDTO pagination=new PaginationDTO(page,limit);
            // return Ok(await _person.getPersons(pagination));
             int count=_db.Persons.Count();
             
-            var dt = SP_Persons.getAllPersons((page - 1) * limit, limit);
+            var dt = SP_Persons.getAllPersons((page - 1) * limit, pagination.recordsPerPage);
             // var items= JsonConvert.SerializeObject(SP_Persons.getAllPersons((page-1)*limit,limit));
             List<Persons> items = new List<Persons>();
             items = (from DataRow dr in dt.Rows
@@ -55,7 +55,7 @@ namespace practise.Controllers
                                PersonId = Convert.ToInt32(dr["PersonId"])
                            
                            }).ToList();
-            return Ok( new PaginatedPersons(items, count, page,limit));
+            return Ok( new PaginatedPersons(items, count, page, pagination.recordsPerPage));
 
             /* var dt = SP_Persons.getAllPersons();
              var result = JsonConvert.SerializeObject(dt);
