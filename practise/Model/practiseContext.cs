@@ -72,9 +72,7 @@ namespace practise.Model
                     .HasMaxLength(255)
                     .IsUnicode(false);
 
-                entity.Property(e => e.ProductPrice)
-                    .HasMaxLength(255)
-                    .IsUnicode(false);
+                entity.Property(e => e.ProductPrice).HasColumnType("decimal(18, 0)");
 
                 entity.Property(e => e.ProductType)
                     .HasMaxLength(255)

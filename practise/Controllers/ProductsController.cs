@@ -66,7 +66,7 @@ namespace practise.Controllers
                         if (productDto.ProductType == null)
                             productDto.ProductType = record.ProductType;
                         if (productDto.ProductPrice == null)
-                            productDto.ProductPrice = record.ProductPrice;
+                            productDto.ProductPrice = (decimal)record.ProductPrice;
 
                         /*Products product = new Products
                         {

@@ -4,6 +4,6 @@
     {
         public string ProductName { get; set; }
         public string ProductType { get; set; }
-        public string ProductPrice { get; set; }
+        public decimal ProductPrice { get; set; }
     }
 }

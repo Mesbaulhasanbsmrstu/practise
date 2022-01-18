@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
+using practise.ErrorHandling;
 using practise.Helper;
 using practise.IRepository;
 using practise.Model;
@@ -188,6 +189,7 @@ namespace practise
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
+            app.ConfigureCustomExceptionMiddleware();
             app.UseMvc();
             app.UseEndpoints(endpoints =>
             {
@@ -195,11 +197,9 @@ namespace practise
             });
            app.UseSwagger();
             app.UseSwaggerUI(c => {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V2");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API ");
             });
-            app.UseSwaggerUI(c => {
-                c.SwaggerEndpoint("/api/Person/person", "All Person");
-            });
+
         }
 
         private void JwtConfiguration(IServiceCollection services)
