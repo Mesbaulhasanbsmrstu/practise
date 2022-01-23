@@ -1,3 +1,5 @@
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -41,6 +43,8 @@ namespace practise
             services.AddControllers();
             services.AddAutoMapper(typeof(Startup));
             services.AddHttpContextAccessor();
+            services.AddCors();
+            services.AddDataProtection();
 
             services.AddControllers().AddNewtonsoftJson(options =>
             {
@@ -48,9 +52,27 @@ namespace practise
             });
 
             services.AddDbContext<practiseContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Development")), ServiceLifetime.Transient);
-            Connection.PRACTISE= Configuration.GetConnectionString("Development");
+            //Connection.PRACTISE= Configuration.GetConnectionString("Development");
+            Connection.PRACTISE = Configuration["ConnectionStrings:Development"];
             services.AddSwaggerGen(swagger =>
             {
+                swagger.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Version = "v1",
+                    Title="My Api",
+                    Description="This is a web API for practise operation",
+                    TermsOfService =new Uri("https://www.euromoney.com/learning/blockchain-explained/how-transactions-get-into-the-blockchain"),
+                    License=new OpenApiLicense()
+                    {
+                        Name="MIT"
+                    },
+                    Contact=new OpenApiContact()
+                    {
+                        Name="Mesba",
+                        Email="mesbaulhasanbsmrstu@gmail.com",
+
+                    }
+                });
 
                 // To Enable authorization using Swagger (JWT)
                 swagger.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
@@ -125,21 +147,38 @@ namespace practise
             {
                 ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver()
             };
-           // services.AddTransient<IPerson, Person>();
-            services.AddScoped<IPerson, Person>();
-            services.AddScoped<ILogin, Login>();
-            services.AddScoped<IProduct,Repository.Products>();
+            // services.AddTransient<IPerson, Person>();
+            /* services.AddScoped<IPerson, Person>();
+             services.AddScoped<ILogin, Login>();
+             services.AddScoped<IProduct,Repository.Products>();
+             services.AddScoped<HashService>();
+
+             var builder = new ContainerBuilder();
+             ConfigureContainer(builder);
+             builder.RegisterType<Person>().As<IPerson>();*/
+           // services.AddScoped<HashService>();
+            var builder = new ContainerBuilder();
+            builder.RegisterModule<Services>();
+           // ConfigureContainer(builder);
+            builder.Populate(services);
+
+
+            //var container = builder.Build();
+            //return new AutofacServiceProvider(container);
 
         }
-      /*  public void ConfigureContainer(ContainerBuilder builder)
+       public void ConfigureContainer(ContainerBuilder builder)
         {
             #region === Services ===
 
             builder.RegisterType<Person>().As<IPerson>();
-   
+            builder.RegisterType<Login>().As<ILogin>();
+            builder.RegisterType<Repository.Products>().As<IProduct>();
+            builder.RegisterType<HashService>();
+
 
             #endregion
-        }*/
+        }
 
 
 
@@ -186,9 +225,17 @@ namespace practise
 
             app.UseHttpsRedirection();
 
+            app.UseStaticFiles();
             app.UseRouting();
+           /* app.UseCors(x => x
+              .AllowAnyMethod()
+              .AllowAnyHeader()
+              .SetIsOriginAllowed(origin => true) // allow any origin
+              .AllowCredentials());*/
+            app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://apirequest.io"));
             app.UseAuthentication();
             app.UseAuthorization();
+            //app.UseCors(builder => builder.WithOrigins("https://apirequest.io/").WithMethods("GET", "POST").AllowAnyHeader());
             app.ConfigureCustomExceptionMiddleware();
             app.UseMvc();
             app.UseEndpoints(endpoints =>

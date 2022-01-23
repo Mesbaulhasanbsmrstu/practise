@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -16,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace practise.Controllers
 {
-    [Authorize]
+    //[Authorize(AuthenticationSchemes =JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiController]
    
@@ -33,10 +34,9 @@ namespace practise.Controllers
         [Route("person/{page}/{limit}")]
         public async Task<IActionResult> getPersons([FromRoute]int page, [FromRoute] int limit)
         {
-            if(page<=0)
-            {
-                return BadRequest("Page number must be greater than 0");
-            }
+            if (page <= 0)
+                page++;
+
             PaginationDTO pagination=new PaginationDTO(page,limit);
            // return Ok(await _person.getPersons(pagination));
             int count=_db.Persons.Count();

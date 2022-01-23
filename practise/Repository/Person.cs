@@ -53,8 +53,8 @@ namespace practise.Repository
                       Address= persondto.Address,
                       City= persondto.City,
 
-                      Image=name
-                    };
+                      Image= "https://localhost:44312/Images/" + persondto.image.FileName
+                };
                 }
                 else
                 {

@@ -12,6 +12,8 @@ using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 using practise.IRepository;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
+using System.Collections.Generic;
 
 namespace practise.Controllers
 {
@@ -30,7 +32,7 @@ namespace practise.Controllers
             _db = db;
         }
         [AllowAnonymous]
-        [HttpPost]
+        [HttpPost(Name="login")]
         public IActionResult Login([FromBody] UserModel login)
         {
             IActionResult response = Unauthorized();
@@ -38,26 +40,50 @@ namespace practise.Controllers
 
             if (user != null)
             {
-               var tokenString = GenerateJSONWebToken(user);
-               response = Ok(new { token = tokenString,UserName= login.Username });
+                return GenerateJSONWebToken(user);
+               // var tokenString = GenerateJSONWebToken(user);
+              // response = Ok(new { token = tokenString,UserName= login.Username });
             }
 
-            return response;
+           return response;
+           // return GenerateJSONWebToken(user);
         }
+        [HttpPost("tokenRefresh",Name ="TokenRefresh")]
+        //[Route("tokenRefresh")]
+        [Authorize]
+        public IActionResult renewToken()
+        {
+            UserModel user = new UserModel
+            {
+                Username = HttpContext.User.Identity.Name,
+                EmailAddress=HttpContext.User.Identity.Name
 
-        private string GenerateJSONWebToken(UserModel userInfo)
+            };
+           return GenerateJSONWebToken(user);
+       //  return Ok(new { token = tokenString});
+
+        }
+ 
+        private IActionResult GenerateJSONWebToken(UserModel userInfo)
         {
 
             var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Audience:Secret"]));
             var credentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
+            var claims = new List<Claim>()
+            {
+                new Claim(ClaimTypes.Name,userInfo.Username),
+                new Claim(ClaimTypes.Email,userInfo.EmailAddress)
 
+            };
+            var expairTime = DateTime.Now.AddMinutes(2);
             var token = new JwtSecurityToken(Configuration["Audience:Iss"],
               Configuration["Audience:Iss"],
-              null,
-              expires: DateTime.Now.AddMinutes(120),
+              claims,
+              expires: expairTime,
               signingCredentials: credentials);
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
+           // return new JwtSecurityTokenHandler().WriteToken(token);
+           return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(token), ExpairTime = expairTime });
         }
 
         private UserModel AuthenticateUser(UserModel login)
