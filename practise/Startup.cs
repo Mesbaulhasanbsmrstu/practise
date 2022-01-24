@@ -114,6 +114,7 @@ namespace practise
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Audience:Secret"]))
                 };
             });
+            //services.AddAutofac();
             services.AddMvc();
             // services.AddMediatR(typeof(Startup));
             //RegisterServices(services);
@@ -157,10 +158,10 @@ namespace practise
              ConfigureContainer(builder);
              builder.RegisterType<Person>().As<IPerson>();*/
            // services.AddScoped<HashService>();
-            var builder = new ContainerBuilder();
-            builder.RegisterModule<Services>();
+            //var builder = new ContainerBuilder();
+           // builder.RegisterModule<Services>();
            // ConfigureContainer(builder);
-            builder.Populate(services);
+           // builder.Populate(services);
 
 
             //var container = builder.Build();
@@ -170,11 +171,11 @@ namespace practise
        public void ConfigureContainer(ContainerBuilder builder)
         {
             #region === Services ===
-
-            builder.RegisterType<Person>().As<IPerson>();
+            builder.RegisterModule<Services>();
+            /*builder.RegisterType<Person>().As<IPerson>();
             builder.RegisterType<Login>().As<ILogin>();
             builder.RegisterType<Repository.Products>().As<IProduct>();
-            builder.RegisterType<HashService>();
+            builder.RegisterType<HashService>();*/
 
 
             #endregion
@@ -276,12 +277,6 @@ namespace practise
                x.TokenValidationParameters = tokenValidationParameters;
            });
 
-            /* services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-             .AddJwtBearer("AuthScheme", x =>
-             {
-                 x.RequireHttpsMetadata = false;
-                 x.TokenValidationParameters = tokenValidationParameters;
-             });*/
 
         }
     }
