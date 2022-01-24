@@ -13,6 +13,7 @@ namespace practise.Helper
             builder.RegisterType<Person>().As<IPerson>();
             builder.RegisterType<Login>().As<ILogin>();
             builder.RegisterType<Repository.Products>().As<IProduct>();
+            builder.RegisterType<OrdersRepository>().As<IOrder>();
             builder.RegisterType<HashService>();
         }
     }

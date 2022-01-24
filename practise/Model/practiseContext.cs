@@ -19,6 +19,7 @@ namespace practise.Model
         {
         }
 
+        public virtual DbSet<Orders> Orders { get; set; }
         public virtual DbSet<Persons> Persons { get; set; }
         public virtual DbSet<Products> Products { get; set; }
 
@@ -33,6 +34,24 @@ namespace practise.Model
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Orders>(entity =>
+            {
+                entity.HasKey(e => e.OredrId)
+                    .HasName("PK__Orders__ECA6884631F527BC");
+
+                entity.Property(e => e.OrderPrice).HasColumnType("decimal(18, 0)");
+
+                entity.Property(e => e.Orderdate).HasColumnType("datetime");
+
+                entity.Property(e => e.PaymentMethod)
+                    .HasMaxLength(20)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.TransactionId)
+                    .HasMaxLength(20)
+                    .IsUnicode(false);
+            });
+
             modelBuilder.Entity<Persons>(entity =>
             {
                 entity.HasKey(e => e.PersonId)

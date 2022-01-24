@@ -40,6 +40,7 @@ namespace practise.Controllers
 
             if (user != null)
             {
+
                 return GenerateJSONWebToken(user);
                // var tokenString = GenerateJSONWebToken(user);
               // response = Ok(new { token = tokenString,UserName= login.Username });
